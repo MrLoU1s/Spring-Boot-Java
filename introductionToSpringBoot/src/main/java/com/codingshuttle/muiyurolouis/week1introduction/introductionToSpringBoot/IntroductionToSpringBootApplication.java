@@ -8,13 +8,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class IntroductionToSpringBootApplication implements CommandLineRunner {
 
-	@Autowired
+/*	@Autowired
 			//notifies framework that the object should be injected where required
 	Apple apple1 ;
 
 	@Autowired
 	Apple apple2;
-	//dependency injected here
+	//dependency injected here*/
+
+	@Autowired
+	DBService dbService;
 
 	public static void main(String[] args) {
 
@@ -36,7 +39,12 @@ public class IntroductionToSpringBootApplication implements CommandLineRunner {
 	// this will still result to error because we have not instantiated the object and not defined the apple as a bean so spring framework is not managing the object for me (NullPointerException error-Runtime error)
 	@Override
 	public void run(String... args) throws Exception {
-		apple1.eatApple();
+
+		System.out.println(dbService.getData());
+
+
+		// code been commented for the sake of dependency injection presentation
+		/*apple1.eatApple();
 
 		apple2.eatApple();
 		// bean  used here
@@ -44,6 +52,6 @@ public class IntroductionToSpringBootApplication implements CommandLineRunner {
 		//checking whether there are different objects created through the use of @Scope("prototype")
 		System.out.println(apple1.hashCode());
 		System.out.println(apple2.hashCode());
-
+*/
 	}
 }
