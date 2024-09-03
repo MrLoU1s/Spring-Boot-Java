@@ -1,3 +1,4 @@
+/*
 package com.codingshuttle.muiyurolouis.week1introduction.introductionToSpringBoot;
 
 public interface DB {
@@ -5,3 +6,4 @@ public interface DB {
     String getData();
 
 }
+*/

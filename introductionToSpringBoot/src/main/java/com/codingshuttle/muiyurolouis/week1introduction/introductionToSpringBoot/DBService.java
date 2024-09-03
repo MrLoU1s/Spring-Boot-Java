@@ -1,3 +1,4 @@
+/*
 package com.codingshuttle.muiyurolouis.week1introduction.introductionToSpringBoot;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,9 @@ public class DBService {
 
 //(Field injection - using the @Autowired annotation)
     // creating instances for DevDB and ProdDB
-   /* @Autowired*/
+   */
+/* @Autowired*//*
+
     // yeah
    final private  DB db;
 
@@ -27,3 +30,4 @@ public class DBService {
 
     }
 }
+*/

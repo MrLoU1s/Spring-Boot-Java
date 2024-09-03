@@ -15,9 +15,11 @@ public class IntroductionToSpringBootApplication implements CommandLineRunner {
 	@Autowired
 	Apple apple2;
 	//dependency injected here*/
+@Autowired
+CakeBaker cakeBaker;
 
-	@Autowired
-	DBService dbService;
+	//@Autowired
+	//DBService dbService;
 
 	public static void main(String[] args) {
 
@@ -40,7 +42,10 @@ public class IntroductionToSpringBootApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		System.out.println(dbService.getData());
+		//
+		//
+		 System.out.println(cakeBaker.bakeCake());
+		//System.out.println(dbService.getData());
 
 
 		// code been commented for the sake of dependency injection presentation
