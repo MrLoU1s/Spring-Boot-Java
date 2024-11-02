@@ -4,10 +4,15 @@ package com.codingshuttle.springbootwebtutorial.springbootwebtutorial.services;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.dto.EmployeeDTO;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.entities.EmployeeEntity;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.repository.EmployeeRepository;
+import org.aspectj.util.Reflection;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 //declares this as a service, enabling it to be injected in other codes
@@ -27,15 +32,19 @@ public class EmployeeService {
     }
     //Need something to convert Service to Entity and Entity to DTO, this can only be done in the Service
     //We also do not want to return an EmployeeEntity to the controller instead we want to return a EmployeeDTO
-    public EmployeeDTO getEmployeeById(Long id){
+    //We also want to add status code over here
+
+    public Optional<EmployeeDTO> getEmployeeById(Long id){
         //this returns EmployeeEntity
-       EmployeeEntity employeeEntity= employeeRepository.findById(id).orElse(null);
+//      Optional< EmployeeEntity> employeeEntity= employeeRepository.findById(id);
        //Instead of doing this we can create a bean to prevent us keeping on creating more objects of Mapper in each method
 //        ModelMapper mapper= new ModelMapper();
-        return modelMapper.map(employeeEntity,EmployeeDTO.class);
-       //one way of achieving the return EMployeeDTO is:
+//        return employeeEntity.map(employeeEntity1->modelMapper.map(employeeEntity,EmployeeDTO.class);
+       //one way of achieving the return EmployeeDTO is:
 //        problem-will occur in ever stage so as to map each variable to the other, instead use a library called model mapper to achive this
 //        return new EmployeeDTO(employeeEntity.getId(),employeeEntity.getName(),employeeEntity.getEmail());
+return employeeRepository.findById(id).map(employeeEntity->modelMapper.map(employeeEntity,EmployeeDTO.class));
+
 
 //transforming data entry to DTO here
 
@@ -64,5 +73,45 @@ public class EmployeeService {
         EmployeeEntity savedEmployeeEntity = employeeRepository.save(toSaveEntity);
         //to return back DTO use modelmapper again
         return modelMapper.map(savedEmployeeEntity,EmployeeDTO.class);
+    }
+
+    //what if employee being searched for is not present?
+    //Do we through an exception, create a new employee with the data.
+    public EmployeeDTO updateEmployeeById(Long employeeId, EmployeeDTO employeeDTO) {
+        //we are going to create a new employee with the data and if the employee is present we are going to update the details.
+        EmployeeEntity employeeEntity = modelMapper.map(employeeDTO,EmployeeEntity.class);
+         employeeEntity.setId(employeeId);
+        EmployeeEntity saveEmployeeEntity = employeeRepository.save(employeeEntity);
+        return modelMapper.map(saveEmployeeEntity,EmployeeDTO.class);
+
+    }
+
+    public boolean isExistsByEmployeeId(Long employeeId){
+        return employeeRepository.existsById(employeeId);
+    }
+
+    public boolean deleteEmployeeById(Long employeeId) {
+        //check if user present or not.
+        boolean exists = isExistsByEmployeeId(employeeId);
+        if(!exists) return false;
+        employeeRepository.deleteById(employeeId);
+        return true;
+    }
+
+    public EmployeeDTO updatePartialEmployeeById(Long employeeId, Map<String, Object> updates) {
+        boolean exists =isExistsByEmployeeId(employeeId);
+        if(!exists) return null;
+        EmployeeEntity employeeEntity = employeeRepository.findById(employeeId).get();
+        //reflection- directly go through any object. Inversely direct field values.
+        updates.forEach((field,value)->{
+            Field fieldToBeUpdated = ReflectionUtils.findRequiredField(EmployeeEntity.class,field);
+            //now making this field public since the attributes in the field are private
+            fieldToBeUpdated.setAccessible(true);
+            ReflectionUtils.setField(fieldToBeUpdated,employeeEntity,value);
+        });
+       //saving
+        //have to return DTO thus call model mapper
+        return modelMapper.map(employeeRepository.save(employeeEntity),EmployeeDTO.class);
+
     }
 }
